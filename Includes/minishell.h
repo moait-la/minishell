@@ -35,4 +35,5 @@ void	ft_allocation_error(void);
 char	*ft_get_path(char *cmd);
 int     open_file(char *name, int nbr);
 
+void	ft_execute(t_cmd *cmd, char *input);
 #endif

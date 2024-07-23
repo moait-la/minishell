@@ -1,0 +1,1 @@
+cat: stdin: Bad file descriptor
