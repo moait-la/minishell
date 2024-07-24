@@ -1,37 +1,30 @@
 #include <stdio.h>
-#include <unistd.h>
 #include <fcntl.h>
+#include <unistd.h>
 #include <stdlib.h>
 
 int main() {
-    int fd = open("output.txt", O_WRONLY | O_CREAT | O_TRUNC, 0644);
-    if (fd == -1) {
-        perror("open");
+    int fds[2];
+
+    if (pipe(fds) == -1) {
+        perror("pipe");
         exit(EXIT_FAILURE);
     }
 
-    pid_t pid = fork();
-    if (pid < 0) {
-        perror("fork");
+    // Close the write end of the pipe
+    // close(fds[1]);
+
+    // Redirect the read end of the pipe to stdin
+    dup2(fds[0], STDIN_FILENO);
+
+    // Close the original read end of the pipe
+    close(fds[0]);
+
+    char *command[3] = {"wc", "-l", NULL};
+    if (execve("/usr/bin/wc", command, NULL) == -1) {
+        perror("execve");
         exit(EXIT_FAILURE);
-    } else if (pid == 0) { // Child process
-        if (dup2(fd, STDOUT_FILENO) == -1) {
-            perror("dup2");
-            exit(EXIT_FAILURE);
-        }
-        close(fd); // Close the original fd
-
-        // This will be written to output.txt
-        printf("This is the child process\n");
-        exit(EXIT_SUCCESS);
-    } else { // Parent process
-        // close(fd); // Close the original fd in the parent
-
-        // This will still be written to the terminal
-        printf("This is the parent process\n");
-
-        // Wait for the child to finish
-        wait(NULL);
     }
+
     return 0;
 }

@@ -6,6 +6,31 @@ void	ft_free(char **ptr);
 int		open_file(char *name, int nbr);
 char	*ft_get_path(char *cmd);
 
+void    ft_init_pipe(t_cmd *cmd, t_open_fds **open_fds)
+{
+    int fds[2];
+
+    if (cmd->next != NULL) // so he dont set the stdout fds for last command
+    {
+        if (pipe(fds) == -1)
+            exit(300);
+        cmd->out = fds[1];
+        cmd->next->in = fds[0];
+        add_to_open_fds(open_fds, fds[1]);
+        add_to_open_fds(open_fds, fds[0]);
+    }
+}
+
+void    ft_init_in_out(t_cmd *cmd)
+{
+    while (cmd != NULL)
+    {
+        cmd->in = 0;
+        cmd->out = 1;
+        cmd = cmd->next;
+    }
+}
+
 void	ft_free(char **ptr)
 {
 	char	**temp;
@@ -34,6 +59,7 @@ int	open_file(char *name, int nbr)
 		fd = open(name, O_CREAT | O_WRONLY | O_APPEND, 0666);
 	if (fd == -1 && nbr == 1)
 	{
+        printf("name is %s and nbr is %d\n", name, nbr);
 		ft_putstr_fd("Error: opening infile\n", 1);
 		exit(1);
 	}

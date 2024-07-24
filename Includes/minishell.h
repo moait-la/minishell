@@ -9,6 +9,14 @@
 # include "../libft/libft.h"
 # include <readline/readline.h>
 # include <stdio.h>
+# include <unistd.h>
+
+typedef struct s_open_fds
+{
+    int     fd;
+    struct  s_open_fds *next;
+}   t_open_fds;
+
 
 typedef	struct s_cmd
 {
@@ -16,6 +24,7 @@ typedef	struct s_cmd
 	int		out;
 	char	**command;
 	char    **redirections;
+    // struct s_open_fds *opened_fds; // to store all opned file descriptors
     struct	s_cmd *next;
 }				t_cmd;
 
@@ -36,4 +45,10 @@ char	*ft_get_path(char *cmd);
 int     open_file(char *name, int nbr);
 
 void	ft_execute(t_cmd *cmd, char *input);
+
+void    ft_init_in_out(t_cmd *cmd);
+void    ft_init_pipe(t_cmd *cmd, t_open_fds **open_fds);
+
+void	add_to_open_fds(t_open_fds **open_fds, int fd);
+
 #endif

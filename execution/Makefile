@@ -1,7 +1,13 @@
-zx
-cx
-px
-ax
-mx
-nx
-dd
+total 224
+-rwxr-xr-x  1 moait-la  candidate  51184 Jul 24 17:23 a.out
+-rw-r--r--  1 moait-la  candidate      0 Jul 24 16:47 err.txt
+-rw-r--r--  1 moait-la  candidate   4463 Jul 23 01:56 execution.c
+-rw-r--r--  1 moait-la  candidate  12331 Jul 24 09:45 execution_2.c
+-rw-r--r--  1 moait-la  candidate      6 Jul 24 10:58 file
+-rw-r--r--  1 moait-la  candidate     20 Jul 24 16:44 file.txt
+-rw-r--r--  1 moait-la  candidate   9762 Jul 24 17:23 fresh_start.c
+-rw-r--r--  1 moait-la  candidate      0 Jul 24 09:43 main
+-rw-r--r--  1 moait-la  candidate      0 Jul 24 17:23 makefile
+-rw-r--r--  1 moait-la  candidate     20 Jul 24 16:44 output.txt
+-rw-r--r--  1 moait-la  candidate   7589 Jul 24 11:32 safety.c
+-rw-r--r--  1 moait-la  candidate   1872 Jul 24 17:19 utils.c
