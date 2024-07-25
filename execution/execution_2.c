@@ -140,6 +140,7 @@ void    ft_init_in_out(t_cmd *cmd)
         cmd = cmd->next;
     }
 }
+
 // cat < file < main < makefile | grep "x" | wc -c
 void    ft_set_pipe_fds(t_cmd *cmd)
 {

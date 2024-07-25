@@ -120,7 +120,6 @@ void	ft_child_process(t_cmd *cmd, char *path)
 	}
 }
 
-
 void	ft_execute(t_cmd *cmd, char *input)
 {
 	t_open_fds	*open_fds = NULL;
@@ -143,6 +142,7 @@ void	ft_execute(t_cmd *cmd, char *input)
 		{
 			ft_init_pipe(cmd, &open_fds);
 			ft_redirect_in_out_oprtrs(cmd, input, &input_offset, &open_fds);
+            
             char *path = ft_get_path(cmd->command[0]);
             ft_child_process(cmd, path);
             free(path);
