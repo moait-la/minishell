@@ -120,21 +120,71 @@ void	ft_child_process(t_cmd *cmd, char *path)
 	}
 }
 
-void	ft_execute(t_cmd *cmd, char *input)
+int is_builtin(char *cmd)
 {
-	t_open_fds	*open_fds = NULL;
+	if (ft_strcmp(cmd, "echo") == 0)
+		return (0);
+	else if (ft_strcmp(cmd, "cd") == 0)
+		return (0);
+	else if (ft_strcmp(cmd, "pwd") == 0)
+		return (0);
+	else if (ft_strcmp(cmd, "export") == 0)
+		return (0);
+	else if (ft_strcmp(cmd, "unset") == 0)
+		return (0);
+	else if (ft_strcmp(cmd, "env") == 0)
+		return (0);
+	else if (ft_strcmp(cmd, "exit") == 0)
+		return (0);
+	return (1);
+}
 
-	int	nbr_pipes;
-	// ----- !! this need to be init for each node stdin and out
+void	excute_builtin(t_cmd *cmd, t_env *env_lst)
+{
+	if (ft_strcmp(cmd->command[0], "echo") == 0)
+		ft_echo(cmd);
+	else if (ft_strcmp(cmd->command[0], "cd") == 0)
+		ft_cd(cmd, env_lst);
+	else if (ft_strcmp(cmd->command[0], "env") == 0)
+    {
+		ft_env(env_lst);
+    }
+	// else if (ft_strcmp(cmd->command[0], "pwd") == 0)
+	// 	ft_pwd();
+	// else if (ft_strcmp(cmd->command[0], "export") == 0)
+	// 	ft_export(cmd->command);
+	// else if (ft_strcmp(cmd->command[0], "unset") == 0)
+	// 	ft_unset(cmd->command);
+	// else if (ft_strcmp(cmd->command[0], "exit") == 0)
+	// 	ft_exit(cmd->command);
+	if (cmd->out != 1) // always close the write end of pipe after writing to it ola ghadi ib9a m3la9
+			close(cmd->out);
+}
+
+void	ft_execute(t_cmd *cmd, char *input, char **envp)
+{
+	t_open_fds	*open_fds;
+	int			nbr_pipes;
+	int			i = 0;
+	char		*path;
+
+	open_fds = NULL;
+    t_env *env_lst = parse_envp(envp);
 	ft_init_in_out(cmd);
 	nbr_pipes = ft_pipes_count(input);
-	int	i = 0;
 	int	childp_count = 0;
 	int input_offset = 0;
 	if (nbr_pipes == 0)
 	{
-		ft_redirect_in_out_oprtrs(cmd, input, &input_offset, &open_fds);
-		ft_execute_without_pipes(cmd, input);
+        if (!is_builtin(cmd->command[0]))
+		{
+			excute_builtin(cmd, env_lst);
+		}
+        else
+        {
+            ft_redirect_in_out_oprtrs(cmd, input, &input_offset, &open_fds);
+            ft_execute_without_pipes(cmd, input);
+        }
 	}
 	else if (nbr_pipes > 0)
 	{
@@ -142,12 +192,18 @@ void	ft_execute(t_cmd *cmd, char *input)
 		{
 			ft_init_pipe(cmd, &open_fds);
 			ft_redirect_in_out_oprtrs(cmd, input, &input_offset, &open_fds);
-            
-            char *path = ft_get_path(cmd->command[0]);
-            ft_child_process(cmd, path);
-            free(path);
+			if (!is_builtin(cmd->command[0]))
+			{
+				excute_builtin(cmd, env_lst);
+			}
+			else
+			{
+				path = ft_get_path(cmd->command[0]);
+				ft_child_process(cmd, path);
+				free(path);
+				childp_count++;
+			}
             i++;
-            childp_count++;
             cmd = cmd->next;
 		}
 	}
@@ -164,149 +220,36 @@ void	ft_execute(t_cmd *cmd, char *input)
 	}
 }
 
-int main() {
-    t_cmd *head;
-    t_cmd *cmd2;
-    t_cmd *cmd3;
-    char **command;
-    char **command2;
-    char **command3;
-    char **redirections;
+// int main(int ac, char **av, char **envp)
+// {
+//     t_cmd *head;
+//     char **command;
 
-    // Command used is: cat < file < main < makefile | grep "x" | wc -c
-    char *input = "cat < file < main < makefile | grep \"x\" | wc -c";
+//     char *input = "cd -";
 
-    // ---- command 1 (cat) ----
-    command = (char **)malloc(sizeof(char *) * (1 + 1));
-    if (!command) {
-        perror("malloc");
-        exit(EXIT_FAILURE);
-    }
-    command[0] = ft_strdup("cat");
-    command[1] = NULL;
+//     // Command: cd -
+//     command = (char **)malloc(sizeof(char *) * 3);
+//     command[0] = ft_strdup("cd");
+//     command[1] = ft_strdup("-");
+//     command[2] = NULL;
 
-    // ---- command 2 (grep "x") ----
-    command2 = (char **)malloc(sizeof(char *) * (2 + 1));
-    if (!command2) {
-        perror("malloc");
-        exit(EXIT_FAILURE);
-    }
-    command2[0] = ft_strdup("grep");
-    command2[1] = ft_strdup("x");
-    command2[2] = NULL;
+//     // Allocate and initialize command
+//     head = (t_cmd *)malloc(sizeof(t_cmd));
+//     head->command = command;
+//     head->next = NULL;
 
-    // ---- command 3 (wc -c) ----
-    command3 = (char **)malloc(sizeof(char *) * (2 + 1));
-    if (!command3){
-        perror("malloc");
-        exit(EXIT_FAILURE);
-    }
-    command3[0] = ft_strdup("wc");
-    command3[1] = ft_strdup("-l");
-    command3[2] = NULL;
+//     // No redirections for cd
+//     head->redirections = NULL;
 
-    // Allocate and initialize head
-    head = (t_cmd *)malloc(sizeof(t_cmd));
-    if (!head) {
-        perror("malloc");
-        exit(EXIT_FAILURE);
-    }
-    head->command = command;
-    head->redirections = NULL;
-    head->next = (t_cmd *)malloc(sizeof(t_cmd));
-    if (!head->next) {
-        perror("malloc");
-        exit(EXIT_FAILURE);
-    }
-    head->next->command = command2;
-    head->next->redirections = NULL;
-    head->next->next = (t_cmd *)malloc(sizeof(t_cmd));
-    if (!head->next->next) {
-        perror("malloc");
-        exit(EXIT_FAILURE);
-    }
-    head->next->next->command = command3;
-    head->next->next->redirections = NULL;
-    head->next->next->next = NULL;
+//     // Initialize in and out
+//     head->in = 0;
+//     head->out = 1;
 
-    // ----- redirections -----
-    char *input_file_1 = "file";
-    char *input_file_2 = "main";
-    char *input_file_3 = "makefile";
-    char *output_file_1 = "outfile_1";
-    char *output_file_2 = "outfile_2";
+//     // Execute the command
+//     ft_execute(head, input, envp);
 
-    // Redirections for head (cat)
-    head->redirections = (char **)malloc(sizeof(char *) * (4 + 1));
-    if (!head->redirections) {
-        perror("malloc");
-        exit(EXIT_FAILURE);
-    }
-    head->redirections[0] = ft_strdup(input_file_1);
-    head->redirections[1] = ft_strdup(input_file_2);
-    head->redirections[2] = ft_strdup(input_file_3);
-    head->redirections[3] = NULL; // Ensure NULL termination
+//     // Free allocated memory (implementation omitted for brevity)
 
-    head->next->redirections = (char **)malloc(sizeof(char *) * (1 + 1));
-    if (!head->next->redirections) {
-        perror("malloc");
-        exit(EXIT_FAILURE);
-    }
-    head->next->redirections[0] = NULL; // No input files for grep
-    head->next->redirections[1] = NULL; // Ensure NULL termination
+//     return 0;
+// }
 
-    // Redirections for cmd3 (wc -c)
-    head->next->next->redirections = (char **)malloc(sizeof(char *) * (2 + 1));
-    if (!head->next->next->redirections) {
-        perror("malloc");
-        exit(EXIT_FAILURE);
-    }
-    head->next->next->redirections[0] = ft_strdup(output_file_1);
-    head->next->next->redirections[1] = ft_strdup(output_file_2);
-    head->next->next->redirections[2] = NULL; // Ensure NULL termination
-
-    head->next->in = 0;
-    head->next->out = 1;
-    head->next->next->in = 0;
-    head->next->next->out = 1;
-
-    // Execute the command with redirections
-    ft_execute(head, input);
-
-    // Free allocated memory (if not done in ft_execute)
-    for (int i = 0; head->redirections[i] != NULL; i++) {
-        free(head->redirections[i]);
-    }
-    free(head->redirections);
-
-    for (int i = 0; head->next->redirections[i] != NULL; i++) {
-        free(head->next->redirections[i]);
-    }
-    free(head->next->redirections);
-
-    for (int i = 0; head->next->next->redirections[i] != NULL; i++) {
-        free(head->next->next->redirections[i]);
-    }
-    free(head->next->next->redirections);
-
-    for (int i = 0; command[i] != NULL; i++) {
-        free(command[i]);
-    }
-    free(command);
-
-    for (int i = 0; command2[i] != NULL; i++) {
-        free(command2[i]);
-    }
-    free(command2);
-
-    for (int i = 0; command3[i] != NULL; i++) {
-        free(command3[i]);
-    }
-    free(command3);
-
-    free(head->next->next);
-    free(head->next);
-    free(head);
-    
-    return 0;
-}

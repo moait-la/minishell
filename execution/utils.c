@@ -6,6 +6,15 @@ void	ft_free(char **ptr);
 int		open_file(char *name, int nbr);
 char	*ft_get_path(char *cmd);
 
+void	ft_error(char *s1, char *s2)
+{
+	ft_putstr_fd("minishell: ", 2);
+	if (s1)
+		ft_putstr_fd(s1, 2);
+	if (s2)
+		ft_putstr_fd(s2, 2);
+}
+
 void    ft_init_pipe(t_cmd *cmd, t_open_fds **open_fds)
 {
     int fds[2];
@@ -29,6 +38,19 @@ void    ft_init_in_out(t_cmd *cmd)
         cmd->out = 1;
         cmd = cmd->next;
     }
+}
+
+char    *ft_getenv(char *value, t_env *env_lst)
+{
+	while (env_lst)
+	{
+		if (!ft_strcmp(value, env_lst->key))
+		{
+			return (env_lst->value);
+		}
+		env_lst = env_lst->next;
+	}
+	return (NULL);
 }
 
 void	ft_free(char **ptr)

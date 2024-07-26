@@ -1,30 +1,29 @@
 #include <stdio.h>
-#include <fcntl.h>
 #include <unistd.h>
 #include <stdlib.h>
 
 int main() {
-    int fds[2];
+    char *path, *oldpath;
 
-    if (pipe(fds) == -1) {
-        perror("pipe");
-        exit(EXIT_FAILURE);
+    // Get and print PATH and OLDPATH before chdir
+    path = getenv("PWD");
+    oldpath = getenv("OLDPWD");
+    printf("Before chdir:\n");
+    printf("PATH: %s\n", path ? path : "Not set");
+    printf("OLDPATH: %s\n\n", oldpath ? oldpath : "Not set");
+
+    // Change directory to "."
+    if (chdir(".") != 0) {
+        perror("chdir failed");
+        return 1;
     }
 
-    // Close the write end of the pipe
-    // close(fds[1]);
-
-    // Redirect the read end of the pipe to stdin
-    dup2(fds[0], STDIN_FILENO);
-
-    // Close the original read end of the pipe
-    close(fds[0]);
-
-    char *command[3] = {"wc", "-l", NULL};
-    if (execve("/usr/bin/wc", command, NULL) == -1) {
-        perror("execve");
-        exit(EXIT_FAILURE);
-    }
+    // Get and print PATH and OLDPATH after chdir
+    path = getenv("PWD");
+    oldpath = getenv("OLDPWD");
+    printf("After chdir:\n");
+    printf("PATH: %s\n", path ? path : "Not set");
+    printf("OLDPATH: %s\n", oldpath ? oldpath : "Not set");
 
     return 0;
 }
