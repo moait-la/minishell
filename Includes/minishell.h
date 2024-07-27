@@ -14,8 +14,9 @@
 # include <errno.h>
 
 typedef struct s_env {
-    char *key;
-    char *value;
+    char    *key;
+    char    *value;
+    int     has_printed;
     struct s_env *next;
 } t_env;
 

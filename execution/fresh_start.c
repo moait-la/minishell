@@ -64,8 +64,7 @@ void	ft_redirect_in_out_oprtrs(t_cmd *cmd, char *input, int *offset, t_open_fds 
 		{
 			(*offset)++;
 		}
-	}	
-
+}
 
 void	ft_execute_without_pipes(t_cmd	*cmd, char *input)
 {
