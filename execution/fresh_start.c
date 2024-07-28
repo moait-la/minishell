@@ -17,7 +17,7 @@ int	ft_pipes_count(char *input)
 void	add_to_open_fds(t_open_fds	**open_fds, int fd)
 {
 	t_open_fds	*new;
-	
+
 	new = malloc(sizeof(t_open_fds));
 	new->fd = fd;
 	new->next = NULL;
@@ -145,13 +145,11 @@ void	excute_builtin(t_cmd *cmd, t_env *env_lst)
 	else if (ft_strcmp(cmd->command[0], "cd") == 0)
 		ft_cd(cmd, env_lst);
 	else if (ft_strcmp(cmd->command[0], "env") == 0)
-    {
 		ft_env(env_lst);
-    }
-	// else if (ft_strcmp(cmd->command[0], "pwd") == 0)
-	// 	ft_pwd();
-	// else if (ft_strcmp(cmd->command[0], "export") == 0)
-	// 	ft_export(cmd->command);
+	else if (ft_strcmp(cmd->command[0], "pwd") == 0)
+		ft_pwd();
+	else if (ft_strcmp(cmd->command[0], "export") == 0)
+		ft_export(cmd->command);
 	// else if (ft_strcmp(cmd->command[0], "unset") == 0)
 	// 	ft_unset(cmd->command);
 	// else if (ft_strcmp(cmd->command[0], "exit") == 0)

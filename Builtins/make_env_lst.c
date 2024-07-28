@@ -7,6 +7,7 @@ t_env *create_env_node(const char *key, const char *value) {
         node->key = strdup(key);
         node->value = strdup(value);
         node->has_printed = 1;  // Initialize has_printed to 1
+        node->exported_with_value = 0;
         node->next = NULL;
     }
     return node;

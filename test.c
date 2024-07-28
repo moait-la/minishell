@@ -1,29 +1,47 @@
 #include <stdio.h>
-#include <unistd.h>
-#include <stdlib.h>
+#include "Includes/minishell.h"
 
-int main() {
-    char *path, *oldpath;
+char	*ft_get_key(char *cmd)
+{
+	int		i;
+	char	*key;
 
-    // Get and print PATH and OLDPATH before chdir
-    path = getenv("PWD");
-    oldpath = getenv("OLDPWD");
-    printf("Before chdir:\n");
-    printf("PATH: %s\n", path ? path : "Not set");
-    printf("OLDPATH: %s\n\n", oldpath ? oldpath : "Not set");
+	i = 0;
+	while (cmd[i])
+	{
+		if (cmd[i] == '=')
+		{
+			key = ft_substr(cmd, 0, i);
+			return (key);
+		}
+		i++;
+	}
+    return (ft_strdup(cmd));
+}
 
-    // Change directory to "."
-    if (chdir(".") != 0) {
-        perror("chdir failed");
-        return 1;
-    }
+char	*ft_get_value(char *cmd)
+{
+	int		i;
+	int		len;
+	char	*value;
 
-    // Get and print PATH and OLDPATH after chdir
-    path = getenv("PWD");
-    oldpath = getenv("OLDPWD");
-    printf("After chdir:\n");
-    printf("PATH: %s\n", path ? path : "Not set");
-    printf("OLDPATH: %s\n", oldpath ? oldpath : "Not set");
+	i = 0;
+	len = ft_strlen(cmd);
+	while (cmd[i])
+	{
+		if (cmd[i] == '=')
+		{
+			value = ft_substr(cmd, i + 1, len);
+            return (value);
+		}
+		i++;
+	}
+	return (NULL);
+}
 
-    return 0;
+int main()
+{
+    char *value = ft_get_value("AA=");
+    if (*value == '\0')
+        printf("'%s'\n", value);
 }

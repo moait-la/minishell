@@ -16,9 +16,10 @@
 typedef struct s_env {
     char    *key;
     char    *value;
-    int     has_printed;
+    int     has_printed; // for srted env lst
+    int     exported_with_value; // to list in the export 1 lst or env lst 0
     struct s_env *next;
-} t_env;
+}	t_env;
 
 typedef struct s_open_fds
 {
@@ -64,5 +65,9 @@ void    ft_env(t_env *env);
 
 //env
 t_env *parse_envp(char **envp);
+
+// builtins utils
+int     is_valid_identifier(char **command);
+void	ft_add_env(t_env **env_lst, int exported, char *key, char *value);
 
 #endif

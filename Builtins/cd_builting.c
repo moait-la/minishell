@@ -26,30 +26,6 @@ void	ft_update_env_lst(char *pwd, char *oldpwd, t_env *env_lst)
     }
 }
 
-void	ft_add_env(t_env **env_lst, char *key, char *value)
-{
-    t_env *new_node;
-    t_env *temp;
-
-    new_node = malloc(sizeof(t_env));
-    new_node->key = ft_strdup(key);
-    new_node->value = ft_strdup(value);
-    new_node->has_printed = 1;
-    new_node->next = NULL;
-
-    if (*env_lst == NULL)
-    {
-        *env_lst = new_node;
-    }
-    else
-    {
-        temp = *env_lst;
-        while (temp->next)
-            temp = temp->next;
-        temp->next = new_node;
-    }
-}
-
 void	ft_goto_home(t_env *env_lst)
 {
 	char	*current_pwd;
