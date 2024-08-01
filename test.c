@@ -1,47 +1,26 @@
 #include <stdio.h>
-#include "Includes/minishell.h"
+#include <stdlib.h>
+#include <unistd.h>
 
-char	*ft_get_key(char *cmd)
-{
-	int		i;
-	char	*key;
+int main() {
+    // Path to the `wc` command
+    const char *pathname = "/bin/cat";
 
-	i = 0;
-	while (cmd[i])
-	{
-		if (cmd[i] == '=')
-		{
-			key = ft_substr(cmd, 0, i);
-			return (key);
-		}
-		i++;
-	}
-    return (ft_strdup(cmd));
-}
+    // Arguments for the `wc -l file1 file2` command
+    char *argv[] = {
+        "cat",   // argv[0] - the command to execute
+        "fake",   // argv[2] - first file
+        "test.c",   // argv[3] - second file
+        NULL       // Null-terminated array
+    };
 
-char	*ft_get_value(char *cmd)
-{
-	int		i;
-	int		len;
-	char	*value;
-
-	i = 0;
-	len = ft_strlen(cmd);
-	while (cmd[i])
-	{
-		if (cmd[i] == '=')
-		{
-			value = ft_substr(cmd, i + 1, len);
-            return (value);
-		}
-		i++;
-	}
-	return (NULL);
-}
-
-int main()
-{
-    char *value = ft_get_value("AA=");
-    if (*value == '\0')
-        printf("'%s'\n", value);
+    // Environment variables (NULL to inherit the current environment)
+    char *envp[] = { NULL };
+    // Execute the `wc -l file1 file2` command
+    if (execve(pathname, argv, envp) == -1) {
+        // perror("execve");  // Print error if execve fails
+        exit(1);
+    }
+    // This point is never reached if execve is successful
+    return 0;
 }

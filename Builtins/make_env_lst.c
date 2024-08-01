@@ -3,7 +3,8 @@
 // Function to create a new node for the linked list
 t_env *create_env_node(const char *key, const char *value) {
     t_env *node = (t_env *)malloc(sizeof(t_env));
-    if (node) {
+    if (node)
+    {
         node->key = strdup(key);
         node->value = strdup(value);
         node->has_printed = 1;  // Initialize has_printed to 1

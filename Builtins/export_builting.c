@@ -27,45 +27,6 @@ void	ft_sorted_envlst(t_cmd *cmd, t_env *env_lst)
     }
 }
 
-char	*ft_get_value(char *cmd)
-{
-	int		i;
-	int		len;
-	char	*value;
-
-	i = 0;
-	len = ft_strlen(cmd);
-	while (cmd[i])
-	{
-		if (cmd[i] == '=')
-		{
-			value = ft_substr(cmd, i + 1, len);
-            return (value);
-		}
-		i++;
-	}
-	return (NULL);
-}
-
-char	*ft_get_key(char *cmd, int *equal_sign)
-{
-	int		i;
-	char	*key;
-
-	i = 0;
-	while (cmd[i])
-	{
-		if (cmd[i] == '=')
-		{
-			*equal_sign = 0;
-			key = ft_substr(cmd, 0, i);
-			return (key);
-		}
-		i++;
-	}
-    return (ft_strdup(cmd));
-}
-
 int	ft_check_ifexists(char *key, t_env *env_lst)
 {
 	while (env_lst)
@@ -107,7 +68,7 @@ void	ft_export(t_cmd *cmd, t_env *env_lst)
 	while (cmd->command[i])
 	{
 		int	equal_sign = 1;
-		char *key = ft_get_key(cmd->command[i], &equal_sign);
+		char *key = ft_get_key(cmd->command[i]);
 		char *value = ft_get_value(cmd->command[i]);
 		int exists = ft_check_ifexists(key, env_lst);
 		if (exists == 1) // he does not exits he will be added

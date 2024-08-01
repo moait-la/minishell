@@ -35,6 +35,45 @@ void	add_to_open_fds(t_open_fds	**open_fds, int fd)
 	tmp->next = new;
 }
 
+int is_builtin(char *cmd)
+{
+	if (ft_strcmp(cmd, "echo") == 0)
+		return (0);
+	else if (ft_strcmp(cmd, "cd") == 0)
+		return (0);
+	else if (ft_strcmp(cmd, "pwd") == 0)
+		return (0);
+	else if (ft_strcmp(cmd, "export") == 0)
+		return (0);
+	else if (ft_strcmp(cmd, "unset") == 0)
+		return (0);
+	else if (ft_strcmp(cmd, "env") == 0)
+		return (0);
+	else if (ft_strcmp(cmd, "exit") == 0)
+		return (0);
+	return (1);
+}
+
+void	excute_builtin(t_cmd *cmd, t_env *env_lst)
+{
+	if (ft_strcmp(cmd->command[0], "echo") == 0)
+		ft_echo(cmd);
+	else if (ft_strcmp(cmd->command[0], "cd") == 0)
+		ft_cd(cmd, env_lst);
+	else if (ft_strcmp(cmd->command[0], "env") == 0)
+		ft_env(env_lst);
+	else if (ft_strcmp(cmd->command[0], "pwd") == 0)
+		ft_pwd();
+	else if (ft_strcmp(cmd->command[0], "export") == 0)
+		ft_export(cmd->command);
+	else if (ft_strcmp(cmd->command[0], "unset") == 0)
+		ft_unset(cmd->command);
+	// else if (ft_strcmp(cmd->command[0], "exit") == 0)
+	// 	ft_exit(cmd->command);
+	if (cmd->out != 1) // always close the write end of pipe after writing to it ola ghadi ib9a m3la9
+			close(cmd->out);
+}
+
 void	ft_redirect_in_out_oprtrs(t_cmd *cmd, char *input, int *offset, t_open_fds **open_fds)
 {
 	int	j;
@@ -117,45 +156,6 @@ void	ft_child_process(t_cmd *cmd, char *path)
 		if (cmd->out != 1)
 			close(cmd->out);
 	}
-}
-
-int is_builtin(char *cmd)
-{
-	if (ft_strcmp(cmd, "echo") == 0)
-		return (0);
-	else if (ft_strcmp(cmd, "cd") == 0)
-		return (0);
-	else if (ft_strcmp(cmd, "pwd") == 0)
-		return (0);
-	else if (ft_strcmp(cmd, "export") == 0)
-		return (0);
-	else if (ft_strcmp(cmd, "unset") == 0)
-		return (0);
-	else if (ft_strcmp(cmd, "env") == 0)
-		return (0);
-	else if (ft_strcmp(cmd, "exit") == 0)
-		return (0);
-	return (1);
-}
-
-void	excute_builtin(t_cmd *cmd, t_env *env_lst)
-{
-	if (ft_strcmp(cmd->command[0], "echo") == 0)
-		ft_echo(cmd);
-	else if (ft_strcmp(cmd->command[0], "cd") == 0)
-		ft_cd(cmd, env_lst);
-	else if (ft_strcmp(cmd->command[0], "env") == 0)
-		ft_env(env_lst);
-	else if (ft_strcmp(cmd->command[0], "pwd") == 0)
-		ft_pwd();
-	else if (ft_strcmp(cmd->command[0], "export") == 0)
-		ft_export(cmd->command);
-	// else if (ft_strcmp(cmd->command[0], "unset") == 0)
-	// 	ft_unset(cmd->command);
-	// else if (ft_strcmp(cmd->command[0], "exit") == 0)
-	// 	ft_exit(cmd->command);
-	if (cmd->out != 1) // always close the write end of pipe after writing to it ola ghadi ib9a m3la9
-			close(cmd->out);
 }
 
 void	ft_execute(t_cmd *cmd, char *input, char **envp)

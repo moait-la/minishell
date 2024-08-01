@@ -1,7 +1,7 @@
 #include "../Includes/minishell.h"
 
-int     is_valid_identifier(char **command);
 void	ft_add_env(t_env **env_lst, int exported, char *key, char *value);
+int     ft_equal_sign(char *cmd);
 
 int	is_valid_identifier(char **command)
 {
@@ -49,4 +49,15 @@ void	ft_add_env(t_env **env_lst, int exported, char *key, char *value)
             temp = temp->next;
         temp->next = new_node;
     }
+}
+
+int	ft_equal_sign(char *cmd)
+{
+	while (*cmd)
+	{
+		if (*cmd == '=')
+			return (0);
+		cmd++;
+	}
+	return (1);
 }

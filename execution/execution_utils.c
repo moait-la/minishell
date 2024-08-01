@@ -1,62 +1,28 @@
-
 #include "../Includes/minishell.h"
-#include <fcntl.h>
 
-void	ft_free(char **ptr);
-int		open_file(char *name, int nbr);
-char	*ft_get_path(char *cmd);
-
-void    ft_init_pipe(t_cmd *cmd, t_open_fds **open_fds)
+void	ft_init_pipe(t_cmd *cmd, t_open_fds **open_fds)
 {
-    int fds[2];
+	int	fds[2];
 
-    if (cmd->next != NULL) // so we dont set the stdout fds for last command
-    {
-        if (pipe(fds) == -1)
-            exit(300);
-        cmd->out = fds[1];
-        cmd->next->in = fds[0];
-        add_to_open_fds(open_fds, fds[1]);
-        add_to_open_fds(open_fds, fds[0]);
-    }
-}
-
-void    ft_init_in_out(t_cmd *cmd)
-{
-    while (cmd != NULL)
-    {
-        cmd->in = 0;
-        cmd->out = 1;
-        cmd = cmd->next;
-    }
-}
-
-char    *ft_getenv(char *value, t_env *env_lst)
-{
-	while (env_lst)
+	if (cmd->next != NULL)
 	{
-		if (!ft_strcmp(value, env_lst->key))
-		{
-			return (env_lst->value);
-		}
-		env_lst = env_lst->next;
+		if (pipe(fds) == -1) // ERROR
+			exit(42);
+		cmd->out = fds[1];
+		cmd->next->in = fds[0];
+		ft_addto_openfds(open_fds, fds[1]);
+		ft_addto_openfds(open_fds, fds[0]);
 	}
-	return (NULL);
 }
 
-void	ft_free(char **ptr)
+void	ft_init_in_out(t_minishell *t_mini)
 {
-	char	**temp;
-
-	if (ptr == NULL)
-		return ;
-	temp = ptr;
-	while (*ptr != NULL)
+	while (t_mini->cmd)
 	{
-		free(*ptr);
-		ptr++;
+		t_mini->cmd->in = 0;
+		t_mini->cmd->out = 1;
+		t_mini->cmd = t_mini->cmd->next; 
 	}
-	free(temp);
 }
 
 int	open_file(char *name, int nbr)
@@ -109,4 +75,44 @@ char	*ft_get_path(char *cmd)
 		}
 	}
 	return (perror("Command not found"), cmd_path);
+}
+
+char	*ft_getenv(char *key, t_env *env_lst)
+{
+	while (env_lst)
+	{
+		if (!ft_strcmp(key, env_lst->key))
+			return (env_lst->value);
+		env_lst = env_lst->next;
+	}
+	return (NULL);
+}
+
+void	ft_free(char **ptr)
+{
+	char	**temp;
+
+	if (ptr == NULL)
+		return ;
+	temp = ptr;
+	while (*ptr != NULL)
+	{
+		free(*ptr);
+		ptr++;
+	}
+	free(temp);
+}
+
+int	ft_pipes_count(char *input)
+{
+	int	count;
+
+	count = 0;
+	while (*input)
+	{
+		if (*input == '|')
+			count++;
+		input++;
+	}
+	return (count);
 }

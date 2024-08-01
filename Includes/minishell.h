@@ -12,6 +12,7 @@
 # include <unistd.h>
 # include <string.h>
 # include <errno.h>
+# include <fcntl.h>
 
 typedef struct s_env {
     char    *key;
@@ -35,6 +36,11 @@ typedef	struct s_cmd
 	char    **redirections;
     struct	s_cmd *next;
 }				t_cmd;
+
+typedef struct s_minishell
+{
+    t_cmd   *cmd;
+}   t_minishell;
 
 typedef struct s_data
 {
@@ -63,8 +69,11 @@ void	ft_cd(t_cmd *cmd, t_env *env_lst);
 void    ft_env(t_env *env);
 
 
-//env
-t_env *parse_envp(char **envp);
+// env
+t_env	*parse_envp(char **envp);
+char	*ft_get_value(char *cmd);
+char	*ft_get_key(char *cmd);
+
 
 // builtins utils
 int     is_valid_identifier(char **command);
